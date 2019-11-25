@@ -1,8 +1,12 @@
 package great.sachin.timer_upgraded;
 
 import android.annotation.SuppressLint;
+import android.app.Notification;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.media.MediaPlayer;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -11,6 +15,7 @@ import com.swifty.animateplaybutton.AnimatePlayButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.DialogFragment;
 
 import android.os.CountDownTimer;
@@ -59,10 +64,11 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     private int totalTimeForUI;
     private int extraTimeUI;
     private long totalTimeInSeconds;
-    /**
-     * Updating the UI
-     */
+    private MediaPlayer notificationSound;
 
+      /**
+       * Updating the UI for material progressbar
+       */
     private void updateUI() {
         progress_bar = findViewById(R.id.progress_countdown);
         if(extraState == ExtraState.EXTRAPRESSED){
@@ -185,11 +191,23 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                     public void onFinish() {
                         counter = 0;
                         displayTimer.setText("00:00:00");
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try{
+                                    notificationSound.start();
+                                Thread.sleep(4000);
+                            }catch (InterruptedException e){
+                                    e.getMessage();
+                                }
+                            }
+                        }).start();
                     }
 
                 }.start();
             } catch (NullPointerException e) {
-
+                e.getMessage();
             }
         }
     }
@@ -207,11 +225,6 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         displayTimer.setText("00:00:00");
     }
 
-    /**
-     * Updating the UI for material progressbar
-     */
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d(TAG, "onCreate: started Activity");
@@ -222,6 +235,9 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         getSupportActionBar().setTitle("        Timer");
         getSupportActionBar().setIcon(R.drawable.ic_access_time_black_24dp);
 
+        notificationSound = MediaPlayer.create(MainActivity.this,R.raw.notification_up);
+
+        //notificationSound  = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         /**
          * Button for setting the time
          * */
