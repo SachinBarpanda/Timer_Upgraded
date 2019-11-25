@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -38,51 +39,50 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         STOPPED, PAUSED, RUNNING, BUTTONPLRESSED
     }
 
-/**
- * The time for the counter are all set by the user so its a temporary one for now
- * */
+    public enum ExtraState {
+        EXTRAPRESSED, EXTRANOTPRESSED
+    }
+
+    /**
+     * The time for the counter are all set by the user so its a temporary one for now
+     */
 
     public static CountDownTimer timer;
 
     public long counter;
     public TimerState timerState = TimerState.STOPPED;
+    public ExtraState extraState = ExtraState.EXTRANOTPRESSED;
     private TextView displayTimer;
     Handler handler = new Handler();
     private ProgressBar progress_bar;
     private Button buttonSetTime;
-
-
-
-
-
+    private int totalTimeForUI;
+    private int extraTimeUI;
+    private long totalTimeInSeconds;
     /**
      * Updating the UI
-     * */
+     */
 
-    private void updateUI(){
+    private void updateUI() {
         progress_bar = findViewById(R.id.progress_countdown);
+        if(extraState == ExtraState.EXTRAPRESSED){
+            totalTimeForUI = totalTimeForUI+extraTimeUI;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
-                {
-//                    progressStatus++;
-//                    android.os.SystemClock.sleep(100);
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            progress_bar.setMax(6);
-                            progress_bar.setProgress((int)counter);
-                        }
-                    });
-                }
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        progress_bar.setMax(totalTimeForUI);
+                        progress_bar.setProgress((int) counter);
+                    }
+                });
+
             }
         }).start();
-
-
-//        progress_bar = findViewById(R.id.progress_countdown);
-//        progress_bar.setProgress((int)counter,true);
-
     }
+
 //    TempActivity tempActivity = new TempActivity();
 
 //    @Override
@@ -91,22 +91,49 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
 //
 //    }
 
-//    @Override
+    //    @Override
 //    protected void onPause() {
 //        super.onPause();
 //
     //    }
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        int hours = hourOfDay * 3600;
-        int minutes = minute * 60;
 
-        long totalTimeInSeconds = (hours + minutes);
-        counter = totalTimeInSeconds;
+        if (extraState == ExtraState.EXTRAPRESSED) {
+            if (timerState == TimerState.RUNNING) {
+                pauseTimer();
+                int hours = hourOfDay * 3600;
+                int minutes = minute * 60;
+                long ExtraTimeInSeconds = (hours + minutes);
+                extraTimeUI = (int) ExtraTimeInSeconds;
+                counter = counter + ExtraTimeInSeconds;
+                updateUI();
+                startTimer();
+                timerState = TimerState.RUNNING;
+                extraState = ExtraState.EXTRANOTPRESSED;
+            }
+            int hours = hourOfDay * 3600;
+            int minutes = minute * 60;
+            long ExtraTimeInSeconds = (hours + minutes);
+            extraTimeUI = (int) ExtraTimeInSeconds;
+
+            counter = counter + ExtraTimeInSeconds;
+            updateUI();
+            extraState = ExtraState.EXTRANOTPRESSED;
+
+        } else {
+            int hours = hourOfDay * 3600;
+            int minutes = minute * 60;
+
+            totalTimeInSeconds = (hours + minutes);
+            totalTimeForUI = (int) totalTimeInSeconds;
+            counter = totalTimeInSeconds;
+        }
     }
-    private void startTimer(){
-        if(timerState == TimerState.PAUSED){
-            timer = new CountDownTimer(counter*1000,1000) {
+
+    private void startTimer() {
+        if (timerState == TimerState.PAUSED) {
+            timer = new CountDownTimer(counter * 1000, 1000) {
                 @SuppressLint("SetTextI18n")
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -120,8 +147,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                     displayTimer.setText(numberFormat.format(hour) + ":" +
                             numberFormat.format(minutes) + ":" +
                             numberFormat.format(seconds));
-                    System.out.println(millisUntilFinished);
-
+                    updateUI();
                 }
 
                 @Override
@@ -133,11 +159,9 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                 }
             }.start();
 
-        }else {
+        } else {
             try {
-
                 timer = new CountDownTimer(counter * 1000, 1000) {
-
 
                     @SuppressLint("SetTextI18n")
                     @Override
@@ -164,26 +188,28 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                     }
 
                 }.start();
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
 
             }
         }
     }
 
-    private void pauseTimer(){
+    private void pauseTimer() {
         timerState = TimerState.PAUSED;
         timer.cancel();
     }
 
-    private void stopTimer(){
+    private void stopTimer() {
         timerState = TimerState.STOPPED;
         timer.cancel();
         counter = 0;
+        updateUI();
         displayTimer.setText("00:00:00");
     }
-/**
- * Updating the UI for material progressbar
- * */
+
+    /**
+     * Updating the UI for material progressbar
+     */
 
 
     @Override
@@ -205,7 +231,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             @Override
             public void onClick(View v) {
                 DialogFragment timePicker = new TimePickerfragment();
-                timePicker.show(getSupportFragmentManager(),"Time-Picker");
+                timePicker.show(getSupportFragmentManager(), "Time-Picker");
                 timerState = TimerState.BUTTONPLRESSED;
             }
         });
@@ -215,14 +241,14 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                 setPlayListener(new AnimatePlayButton.OnButtonsListener() {
                     @Override
                     public boolean onPlayClick(View view) {
-                        if(timerState==TimerState.BUTTONPLRESSED) {
+                        if (timerState == TimerState.BUTTONPLRESSED) {
                             //starting the timer
                             startTimer();
                             //State Changed
                             timerState = TimerState.RUNNING;
                             //Buttons are updated
                             return true;
-                        }else{
+                        } else {
                             Snackbar.make(view, "Please Enter a time", Snackbar.LENGTH_LONG)
                                     .setAction("Action", null).show();
                             return false;
@@ -240,13 +266,10 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                     @Override
                     public boolean onResumeClick(View view) {
                         startTimer();
+                        timerState = TimerState.RUNNING;
                         return true;
                     }
 
-                    /**
-                     * Stops when time is finished
-                     * Stops when time is interrupted
-                     */
                     @Override
                     public boolean onStopClick(View view) {
                         stopTimer();
@@ -254,19 +277,19 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                     }
                 });
 
-
         FloatingActionButton fab = findViewById(R.id.fab_Add);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Feature Coming Soon!", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                DialogFragment timePicker = new TimePickerfragment();
+                timePicker.show(getSupportFragmentManager(), "Time-Picker");
+                extraState = ExtraState.EXTRAPRESSED;
             }
         });
 
     }
 
-            @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
