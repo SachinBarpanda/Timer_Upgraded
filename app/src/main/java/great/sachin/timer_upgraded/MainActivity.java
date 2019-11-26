@@ -128,12 +128,16 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             extraState = ExtraState.EXTRANOTPRESSED;
 
         } else {
-            int hours = hourOfDay * 3600;
-            int minutes = minute * 60;
+            if (hourOfDay == 0 && minute == 0) {
+                timer.onFinish();
+            } else {
+                int hours = hourOfDay * 3600;
+                int minutes = minute * 60;
 
-            totalTimeInSeconds = (hours + minutes);
-            totalTimeForUI = (int) totalTimeInSeconds;
-            counter = totalTimeInSeconds;
+                totalTimeInSeconds = (hours + minutes);
+                totalTimeForUI = (int) totalTimeInSeconds;
+                counter = totalTimeInSeconds;
+            }
         }
     }
 
@@ -247,7 +251,7 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         buttonSetTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (timerState == TimerState.STOPPED) {
+                if (timerState == TimerState.STOPPED || timerState ==TimerState.BUTTONPLRESSED) {
                     DialogFragment timePicker = new TimePickerfragment();
                     timePicker.show(getSupportFragmentManager(), "Time-Picker");
                     timerState = TimerState.BUTTONPLRESSED;
@@ -263,7 +267,8 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                 setPlayListener(new AnimatePlayButton.OnButtonsListener() {
                     @Override
                     public boolean onPlayClick(View view) {
-                        if (timerState == TimerState.BUTTONPLRESSED) {
+                        if (timerState == TimerState.BUTTONPLRESSED
+                                && totalTimeInSeconds!=0) {
                             //starting the timer
                             startTimer();
                             //State Changed
@@ -281,8 +286,13 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                     public boolean onPauseClick(View view) {
                         //TODO: Stop the timer
 
+                        if(totalTimeInSeconds!=0){
                         pauseTimer();
                         return true;
+                        }
+                        else
+                            timer.onFinish();
+                        return false;
                     }
 
                     @Override
