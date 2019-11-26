@@ -66,13 +66,13 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
     private long totalTimeInSeconds;
     private MediaPlayer notificationSound;
 
-      /**
-       * Updating the UI for material progressbar
-       */
+    /**
+     * Updating the UI for material progressbar
+     */
     private void updateUI() {
         progress_bar = findViewById(R.id.progress_countdown);
-        if(extraState == ExtraState.EXTRAPRESSED){
-            totalTimeForUI = totalTimeForUI+extraTimeUI;
+        if (extraState == ExtraState.EXTRAPRESSED) {
+            totalTimeForUI = totalTimeForUI + extraTimeUI;
         }
         new Thread(new Runnable() {
             @Override
@@ -195,10 +195,10 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                try{
+                                try {
                                     notificationSound.start();
-                                Thread.sleep(4000);
-                            }catch (InterruptedException e){
+                                    Thread.sleep(4000);
+                                } catch (InterruptedException e) {
                                     e.getMessage();
                                 }
                             }
@@ -235,20 +235,26 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
         getSupportActionBar().setTitle("        Timer");
         getSupportActionBar().setIcon(R.drawable.ic_access_time_black_24dp);
 
-        notificationSound = MediaPlayer.create(MainActivity.this,R.raw.notification_up);
+        notificationSound = MediaPlayer.create(MainActivity.this, R.raw.notification_up);
 
         //notificationSound  = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         /**
          * Button for setting the time
          * */
 
+
         buttonSetTime = findViewById(R.id.buttonSetTime);
         buttonSetTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DialogFragment timePicker = new TimePickerfragment();
-                timePicker.show(getSupportFragmentManager(), "Time-Picker");
-                timerState = TimerState.BUTTONPLRESSED;
+                if (timerState == TimerState.STOPPED) {
+                    DialogFragment timePicker = new TimePickerfragment();
+                    timePicker.show(getSupportFragmentManager(), "Time-Picker");
+                    timerState = TimerState.BUTTONPLRESSED;
+                } else {
+                    Snackbar.make(v, "Please Stop The Timer First", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
             }
         });
 
