@@ -128,16 +128,16 @@ public class MainActivity extends AppCompatActivity implements TimePickerDialog.
             extraState = ExtraState.EXTRANOTPRESSED;
 
         } else {
-            if (hourOfDay == 0 && minute == 0) {
-                timer.onFinish();
-            } else {
+//            if (hourOfDay == 0 && minute == 0) {
+//                timer.cancel();
+//            } else {
                 int hours = hourOfDay * 3600;
                 int minutes = minute * 60;
 
                 totalTimeInSeconds = (hours + minutes);
                 totalTimeForUI = (int) totalTimeInSeconds;
                 counter = totalTimeInSeconds;
-            }
+//            }
         }
     }
 
