@@ -63,6 +63,10 @@ public class Main3Activity extends AppCompatActivity implements interfaceToCallC
         authorInfoIcon = findViewById(R.id.AuthorInfoIcon);
         deleteAllIcons.setImageResource(R.drawable.ic_clear_all_black_24dp);
 
+        authorInfoIcon.setOnClickListener(v->{
+            Intent myInfo = new Intent(Main3Activity.this,Who_Am_I.class);
+            startActivity(myInfo);
+        });
 
         deleteAllIcons.setOnClickListener(v -> {
             showPopup(v);

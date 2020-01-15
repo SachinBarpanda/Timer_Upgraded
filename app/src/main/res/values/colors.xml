@@ -3,6 +3,6 @@
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#110631</color>
     <color name="colorAccent">#D81B60</color>
-    <color name="startGradient" >#240b36</color>
+    <color name="startGradient" >#240B36</color>
     <color name="endGradient">#c31432</color>
 </resources>

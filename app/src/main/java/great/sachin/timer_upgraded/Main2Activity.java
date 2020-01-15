@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class Main2Activity extends AppCompatActivity {
     //Timing for the Home Screen
-    private static int SPLASH_TIMEOUT = 1700;
+    private static int SPLASH_TIMEOUT = 1800;
     ImageView bgapp;
     Animation bganim;
     TextView Welcome;
