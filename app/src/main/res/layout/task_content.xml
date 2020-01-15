@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="80sp"
+    android:background="@color/colorAccent">
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="fill_parent"
+        android:layout_height="80dp"
+        android:layout_alignParentEnd="true"
+        android:paddingStart="20dp"
+        android:paddingTop="15dp"
+        android:text="@string/textview"
+        android:fontFamily="@font/alegreya_sc"
+        android:textColor="#FFF"
+        android:textSize="22sp"
+        android:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/menuImage"
+        android:layout_width="28dp"
+        android:layout_height="52dp"
+        android:layout_gravity="end"
+        android:layout_marginTop="15dp"
+        android:layout_marginRight="10dp"
+        android:visibility="visible"
+        app:srcCompat="@drawable/ic_more_vert_black_24dp" />
+
+    <TextView
+        android:id="@+id/remainingTimeTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="45dp"
+        android:text="00:00:00"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="77dp"
+        android:layout_marginTop="45dp"
+        android:text="/"
+        android:textColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/totalTimeTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="87dp"
+        android:layout_marginTop="45dp"
+        android:text="00:00:00"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
